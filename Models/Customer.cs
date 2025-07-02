@@ -1,0 +1,74 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CommunityAppAPI.Models
+{
+    public class Customer
+    {
+        public long CustomerId { get; set; }
+
+        [Required]
+        public int TypeId { get; set; }
+
+        [Required]
+        public char Type { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string Name { get; set; }
+
+        [Required]
+        [MaxLength(25)]
+        public string Mobile { get; set; }
+
+        [MaxLength(25)]
+        public string Landline { get; set; }
+
+        [MaxLength(25)]
+        public string AlternateContactNo { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [MaxLength(50)]
+        public string Email { get; set; }
+
+        public int? CommunityId { get; set; }
+
+        [MaxLength(50)]
+        public string Building { get; set; }
+
+        [MaxLength(20)]
+        public string Block { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string Address { get; set; }
+
+        [MaxLength(50)]
+        public string Latitude { get; set; }
+
+        [MaxLength(50)]
+        public string Longitude { get; set; }
+
+        public bool? Blacklisted { get; set; }
+
+        public decimal? SettlementPercentage { get; set; }
+
+        [Required]
+        public bool Deleted { get; set; }
+
+        [Required]
+        public bool Active { get; set; }
+
+        [Required]
+        public DateTime CreatedDate { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string CreatedBy { get; set; }
+
+        public DateTime? ModifiedDate { get; set; }
+
+        [MaxLength(50)]
+        public string ModifiedBy { get; set; }
+    }
+}

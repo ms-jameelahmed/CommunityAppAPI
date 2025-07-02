@@ -24,14 +24,66 @@ namespace CommunityAppAPI.Repositories
             return await _db.QueryFirstOrDefaultAsync<Customer>("usp_Customers_GetById", new { CustomerId = id }, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task AddAsync(Customer customer)
+        public async Task<string> AddAsync(Customer customer)
         {
-            await _db.ExecuteAsync("usp_Customers_Insert", customer, commandType: CommandType.StoredProcedure);
+            var result = await _db.QueryAsync<string>("usp_Customers_Insert", new
+            {
+                customer.TypeId,
+                customer.Type,
+                customer.Name,
+                customer.Mobile,
+                customer.Landline,
+                customer.AlternateContactNo,
+                customer.Email,
+                customer.CommunityId,
+                customer.Building,
+                customer.Block,
+                customer.Address,
+                customer.Longitude,
+                customer.Latitude,
+                customer.Blacklisted,
+                customer.SettlementPercentage,
+                customer.Active,
+                customer.CreatedDate,
+                customer.CreatedBy,
+                customer.UserId,
+                customer.Password,
+                customer.LoginEnable,
+                customer.CustomerType
+            }, commandType: CommandType.StoredProcedure);
+
+            var firstResult = result.FirstOrDefault();
+
+            // If the first result contains a message, return it
+            return firstResult; // could be null if everything is successful
         }
+
+
 
         public async Task UpdateAsync(Customer customer)
         {
-            await _db.ExecuteAsync("usp_Customers_Update", customer, commandType: CommandType.StoredProcedure);
+            var parameters = new DynamicParameters();
+            parameters.Add("@CustomerId", customer.CustomerId);
+            parameters.Add("@TypeId", customer.TypeId);
+            parameters.Add("@Type", customer.Type);
+            parameters.Add("@Name", customer.Name);
+            parameters.Add("@Mobile", customer.Mobile);
+            parameters.Add("@Landline", customer.Landline);
+            parameters.Add("@AlternateContactNo", customer.AlternateContactNo);
+            parameters.Add("@Email", customer.Email);
+            parameters.Add("@CommunityId", customer.CommunityId);
+            parameters.Add("@Building", customer.Building);
+            parameters.Add("@Block", customer.Block);
+            parameters.Add("@Address", customer.Address);
+            parameters.Add("@Longitude", customer.Longitude);
+            parameters.Add("@Latitude", customer.Latitude);
+            parameters.Add("@Blacklisted", customer.Blacklisted);
+            parameters.Add("@SettlementPercentage", customer.SettlementPercentage);
+            parameters.Add("@Active", customer.Active);
+            parameters.Add("@ModifiedDate", customer.ModifiedDate);
+            parameters.Add("@ModifiedBy", customer.ModifiedBy);
+
+            await _db.ExecuteAsync("usp_Customers_Update", parameters, commandType: CommandType.StoredProcedure);
         }
 
         public async Task DeleteAsync(long id, string modifiedBy)

@@ -70,5 +70,20 @@ namespace CommunityAppAPI.Models
 
         [MaxLength(50)]
         public string ModifiedBy { get; set; }
+
+        // 👇 Login Details Section
+        [Required]
+        [MaxLength(30)]
+        public string UserId { get; set; }
+
+        [Required]
+        [MaxLength(150)]
+        public string Password { get; set; }  // Make sure this is hashed before saving
+
+        [Required]
+        public bool LoginEnable { get; set; }
+
+        [Required]
+        public char CustomerType { get; set; }
     }
 }

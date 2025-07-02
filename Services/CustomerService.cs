@@ -15,7 +15,11 @@ namespace CommunityAppAPI.Services
 
         public Task<IEnumerable<Customer>> GetAllAsync() => _repo.GetAllAsync();
         public Task<Customer> GetByIdAsync(long id) => _repo.GetByIdAsync(id);
-        public Task AddAsync(Customer customer) => _repo.AddAsync(customer);
+        public async Task<string> AddAsync(Customer customer)
+        {
+            var result = await _repo.AddAsync(customer);
+            return result; // could be "Email already exists" or null
+        }
         public Task UpdateAsync(Customer customer) => _repo.UpdateAsync(customer);
         public Task DeleteAsync(long id, string modifiedBy) => _repo.DeleteAsync(id, modifiedBy);
     }

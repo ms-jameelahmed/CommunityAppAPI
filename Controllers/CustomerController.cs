@@ -1,4 +1,5 @@
 ﻿using CommunityAppAPI.Models;
+using CommunityAppAPI.Services.Common;
 using CommunityAppAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,151 +11,98 @@ namespace CommunityAppAPI.Controllers
     [Route("api/[controller]")]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerService _service;
-        private readonly ILogger<CustomerController> _logger;
-        public CustomerController(ICustomerService service, ILogger<CustomerController> logger)
+        private readonly ICustomerService _customerService;
+        private readonly IResponseService _responseService;
+
+        public CustomerController(ICustomerService customerService, IResponseService responseService)
         {
-            _service = service;
-            _logger = logger;
+            _customerService = customerService;
+            _responseService = responseService;
         }
 
-        private ObjectResult CustomResponse(object data, string message, bool success = true)
-        {
-            var uniqueId = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
-
-            _logger.LogInformation("Success: {Message}, UniqueId: {UniqueId}, Timestamp: {Timestamp}",
-                message, uniqueId, timestamp);
-
-            return Ok(new
-            {
-                success,
-                message,
-                uniqueId,
-                timestamp,
-                data
-            });
-        }
-
-        private ObjectResult ErrorResponse(string errorMessage)
-        {
-            var uniqueId = Guid.NewGuid();
-            var timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
-
-            _logger.LogError("Error: {Error}, UniqueId: {UniqueId}, Timestamp: {Timestamp}",
-                errorMessage, uniqueId, timestamp);
-
-            return StatusCode(500, new
-            {
-                success = false,
-                message = errorMessage,
-                uniqueId,
-                timestamp,
-                data = (object)null
-            });
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                var customers = await _service.GetAllAsync();
-                return CustomResponse(customers, "Customer list fetched successfully");
-            }
-            catch (Exception ex)
-            {
-                return ErrorResponse($"Error retrieving customers: {ex.Message}");
-            }
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(long id)
-        {
-            try
-            {
-                var customer = await _service.GetByIdAsync(id);
-                if (customer == null)
-                    return NotFound(new
-                    {
-                        success = false,
-                        message = "Customer not found",
-                        uniqueId = Guid.NewGuid(),
-                        data = (object)null
-                    });
-
-                return CustomResponse(customer, "Customer fetched successfully");
-            }
-            catch (Exception ex)
-            {
-                return ErrorResponse($"Error retrieving customer: {ex.Message}");
-            }
-        }
-
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] Customer customer)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    uniqueId = Guid.NewGuid(),
-                    data = ModelState
-                });
-            }
+                return _responseService.ValidationErrorResponse(ModelState);
 
             try
             {
                 customer.CreatedDate = DateTime.Now;
-                await _service.AddAsync(customer);
-                return CustomResponse(null, "Customer created successfully");
+                var resultMessage = await _customerService.AddAsync(customer);
+
+                if (!string.IsNullOrEmpty(resultMessage))
+                    return _responseService.ConflictResponse(resultMessage); // 409 Conflict
+
+                return _responseService.SuccessResponse(null, "Customer created successfully");
             }
             catch (Exception ex)
             {
-                return ErrorResponse($"Error creating customer: {ex.Message}");
+                return _responseService.ErrorResponse($"Error creating customer: {ex.Message}");
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpGet("get/{id:long}")]
+        public async Task<IActionResult> GetById(long id)
+        {
+            try
+            {
+                var customer = await _customerService.GetByIdAsync(id);
+                if (customer == null)
+                    return _responseService.NotFoundResponse("Customer not found");
+
+                return _responseService.SuccessResponse(customer, "Customer fetched successfully");
+            }
+            catch (Exception ex)
+            {
+                return _responseService.ErrorResponse($"Error retrieving customer: {ex.Message}");
+            }
+        }
+
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var customers = await _customerService.GetAllAsync();
+                return _responseService.SuccessResponse(customers, "Customer list fetched successfully");
+            }
+            catch (Exception ex)
+            {
+                return _responseService.ErrorResponse($"Error retrieving customers: {ex.Message}");
+            }
+        }
+
+        [HttpPut("update/{id:long}")]
         public async Task<IActionResult> Update(long id, [FromBody] Customer customer)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    uniqueId = Guid.NewGuid(),
-                    data = ModelState
-                });
-            }
+                return _responseService.ValidationErrorResponse(ModelState);
 
             try
             {
                 customer.CustomerId = id;
                 customer.ModifiedDate = DateTime.Now;
-                await _service.UpdateAsync(customer);
-                return CustomResponse(null, "Customer updated successfully");
+                await _customerService.UpdateAsync(customer);
+                return _responseService.SuccessResponse(customer, "Customer updated successfully");
             }
             catch (Exception ex)
             {
-                return ErrorResponse($"Error updating customer: {ex.Message}");
+                return _responseService.ErrorResponse($"Error updating customer: {ex.Message}");
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id:long}")]
         public async Task<IActionResult> Delete(long id, [FromQuery] string modifiedBy)
         {
             try
             {
-                await _service.DeleteAsync(id, modifiedBy);
-                return CustomResponse(null, "Customer deleted successfully");
+                await _customerService.DeleteAsync(id, modifiedBy);
+                return _responseService.SuccessResponse(null, "Customer deleted successfully");
             }
             catch (Exception ex)
             {
-                return ErrorResponse($"Error deleting customer: {ex.Message}");
+                return _responseService.ErrorResponse($"Error deleting customer: {ex.Message}");
             }
         }
     }

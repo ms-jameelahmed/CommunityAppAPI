@@ -1,15 +1,17 @@
 ﻿using CommunityAppAPI.Repositories;
 using CommunityAppAPI.Repositories.Interfaces;
 using CommunityAppAPI.Services;
+using CommunityAppAPI.Services.Common;
+using CommunityAppAPI.Services.CommunityAppAPI.Services.Common;
 using CommunityAppAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Data;
-using System.Text;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using System.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +93,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IDbConnection>(_ => new SqlConnection(connectionString));
 
 // Custom DI
+builder.Services.AddScoped<IResponseService, ResponseService>();
+builder.Services.AddScoped<IVendorRepository, VendorRepository>();
+builder.Services.AddScoped<IVendorService, VendorService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();

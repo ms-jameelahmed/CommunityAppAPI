@@ -7,7 +7,7 @@ namespace CommunityAppAPI.Repositories
     {
         public User ValidateUser(string email, string password)
         {
-            //sample code from AH
+            //sample code from AH. Dated: 08  jul 2025
             // Mock user validation
             if (email == "admin@example.com" && password == "password")
                 return new User { Id = 1, Email = email };

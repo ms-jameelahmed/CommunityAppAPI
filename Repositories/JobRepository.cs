@@ -27,7 +27,7 @@ namespace CommunityAppAPI.Repositories
             parameters.Add("@CreatedBy", job.CreatedBy);
             parameters.Add("@JobId", dbType: DbType.Int64, direction: ParameterDirection.Output);
 
-            await CreateConnection().ExecuteAsync("usp_Jobs_Insert", parameters, commandType: CommandType.StoredProcedure);
+            await CreateConnection().ExecuteAsync("usp_Jobs_Create", parameters, commandType: CommandType.StoredProcedure);
 
             long jobId = parameters.Get<long>("@JobId");
 

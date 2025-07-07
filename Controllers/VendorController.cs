@@ -30,10 +30,11 @@ namespace CommunityAppAPI.Controllers
             try
             {
                 var result = await _vendorService.RegisterVendorAsync(vendor);
-                if (result)
+                if (!string.IsNullOrEmpty(result))
+                    return _responseService.ConflictResponse(result); // 409 Conflict
+                
                     return _responseService.SuccessResponse(vendor, "Vendor registered successfully");
 
-                return _responseService.ErrorResponse("Vendor registration failed");
             }
             catch (Exception ex)
             {
@@ -83,7 +84,7 @@ namespace CommunityAppAPI.Controllers
                 vendor.CustomerId = id;
                 vendor.ModifiedDate = DateTime.Now;
                 var result = await _vendorService.UpdateVendorAsync(vendor);
-                if (result)
+                if (result!="")
                     return _responseService.SuccessResponse(vendor, "Vendor updated successfully");
 
                 return _responseService.ErrorResponse("Vendor update failed");

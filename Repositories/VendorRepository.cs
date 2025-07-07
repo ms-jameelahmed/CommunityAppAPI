@@ -43,14 +43,16 @@ namespace CommunityAppAPI.Repositories
 
 
 
-        public async Task<bool> RegisterVendorAsync(Vendor vendor)
+        public async Task<string> RegisterVendorAsync(Vendor vendor)
         {
-            using var connection = CreateConnection();
+            var connection = (SqlConnection)CreateConnection();
+            await connection.OpenAsync();
             using var transaction = connection.BeginTransaction();
 
             try
             {
-                var vendorId = await connection.ExecuteScalarAsync<long>(
+                // Check for duplicates or insert
+                var result = await connection.QueryAsync<string>(
                     "usp_Vendor_Insert",
                     new
                     {
@@ -81,6 +83,18 @@ namespace CommunityAppAPI.Repositories
                     transaction,
                     commandType: CommandType.StoredProcedure
                 );
+
+                var response = result.FirstOrDefault();
+
+                if (response?.StartsWith("UserId") == true ||
+                    response?.StartsWith("Email") == true ||
+                    response?.StartsWith("Mobile") == true)
+                {
+                    transaction.Rollback();
+                    return response; // e.g., "Email : xyz@example.com Already Exists"
+                }
+
+                long vendorId = long.Parse(response);
 
                 if (vendor.BankDetail != null)
                 {
@@ -129,16 +143,18 @@ namespace CommunityAppAPI.Repositories
                 }
 
                 transaction.Commit();
-                return true;
+                return $"Success: Vendor registered with ID {vendorId}.";
             }
-            catch
+            catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                var errorId = Guid.NewGuid();
+                var timestamp = DateTime.UtcNow.ToString("u");
+                return $"Error: {ex.Message} | Reference ID: {errorId} | Timestamp: {timestamp}";
             }
         }
 
-        public async Task<bool> UpdateVendorAsync(Vendor vendor)
+        public async Task<string> UpdateVendorAsync(Vendor vendor)
         {
             using var connection = CreateConnection();
 
@@ -169,7 +185,7 @@ namespace CommunityAppAPI.Repositories
                 commandType: CommandType.StoredProcedure
             );
 
-            return rows > 0;
+            return $"Success: Vendor Details updated";
         }
 
         public async Task<bool> DeleteVendorAsync(long vendorId, string modifiedBy)

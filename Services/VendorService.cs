@@ -13,7 +13,7 @@ namespace CommunityAppAPI.Services
             _repo = repo;
         }
 
-        public Task<bool> RegisterVendorAsync(Vendor vendor)
+        public Task<string> RegisterVendorAsync(Vendor vendor)
             => _repo.RegisterVendorAsync(vendor);
 
         public Task<IEnumerable<Vendor>> GetAllAsync()
@@ -22,7 +22,7 @@ namespace CommunityAppAPI.Services
         public Task<Vendor> GetByIdAsync(long vendorId)
             => _repo.GetByIdAsync(vendorId);
 
-        public Task<bool> UpdateVendorAsync(Vendor vendor)
+        public Task<string> UpdateVendorAsync(Vendor vendor)
             => _repo.UpdateVendorAsync(vendor);
 
         public Task<bool> DeleteVendorAsync(long vendorId, string modifiedBy)

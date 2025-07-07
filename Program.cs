@@ -114,6 +114,7 @@ builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IJobService, JobService>();
 var app = builder.Build();
 
+
 // Middleware
 
 

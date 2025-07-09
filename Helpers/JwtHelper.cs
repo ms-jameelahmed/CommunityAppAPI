@@ -8,7 +8,7 @@ namespace CommunityAppAPI.Helpers
 {
     public static class JwtHelper
     {
-        public static string GenerateToken(User user, IConfiguration config)
+        public static string GenerateToken(long CustomerId, string Email, IConfiguration config)
         {
             var jwtSettings = config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
@@ -16,8 +16,8 @@ namespace CommunityAppAPI.Helpers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.Name, Email),
+                new Claim(ClaimTypes.NameIdentifier, CustomerId.ToString())
             };
 
             var token = new JwtSecurityToken(

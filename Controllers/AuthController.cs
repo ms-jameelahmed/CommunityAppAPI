@@ -20,9 +20,9 @@ namespace CommunityAppAPI.Controllers
         }
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login([FromBody] AuthRequest request)
+        public async Task<IActionResult> Login([FromBody] AuthRequest request)
         {
-            var result = _authService.Authenticate(request);
+            var result =await _authService.Authenticate(request);
             if (result == null)
             {
                 _logger.LogWarning("Unauthorized login attempt for {Email}", request.Email);

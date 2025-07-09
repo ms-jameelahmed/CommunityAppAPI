@@ -41,14 +41,13 @@ namespace CommunityAppAPI.Repositories
                 customer.Address,
                 customer.Longitude,
                 customer.Latitude,
-                customer.Blacklisted,
+               
                 customer.SettlementPercentage,
-                customer.Active,
-                customer.CreatedDate,
+               
                 customer.CreatedBy,
                 customer.UserId,
                 customer.Password,
-                customer.LoginEnable,
+                
                 customer.CustomerType
             }, commandType: CommandType.StoredProcedure);
 

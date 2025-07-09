@@ -71,13 +71,9 @@ namespace CommunityAppAPI.Repositories
                         vendor.Latitude,
                         vendor.Blacklisted,
                         vendor.SettlementPercentage,
-                        vendor.Deleted,
-                        vendor.Active,
-                        vendor.CreatedDate,
                         vendor.CreatedBy,
                         vendor.UserId,
                         vendor.Password,
-                        vendor.LoginEnable,
                         vendor.CustomerType
                     },
                     transaction,
@@ -109,10 +105,8 @@ namespace CommunityAppAPI.Repositories
                             vendor.BankDetail.SWIFTBIC,
                             vendor.BankDetail.BankBranch,
                             vendor.BankDetail.Address,
-                            vendor.BankDetail.Deleted,
-                            vendor.BankDetail.Active,
-                            vendor.BankDetail.CreatedDate,
-                            vendor.BankDetail.CreatedBy
+                           
+                            vendor.CreatedBy,
                         },
                         transaction,
                         commandType: CommandType.StoredProcedure
@@ -131,10 +125,8 @@ namespace CommunityAppAPI.Repositories
                                 doc.DocumentType,
                                 doc.DocumentExpiryDate,
                                 doc.DocumentFile,
-                                doc.Deleted,
-                                doc.Active,
-                                doc.CreatedDate,
-                                doc.CreatedBy
+                               
+                                vendor.CreatedBy,
                             },
                             transaction,
                             commandType: CommandType.StoredProcedure

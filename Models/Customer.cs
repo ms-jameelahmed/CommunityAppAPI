@@ -4,10 +4,10 @@ namespace CommunityAppAPI.Models
 {
     public class Customer
     {
-        public long CustomerId { get; set; }
+        public long? CustomerId { get; set; }
 
-        [Required]
-        public int TypeId { get; set; }
+        
+        public int  TypeId { get; set; }
 
         [Required]
         public char Type { get; set; }
@@ -21,10 +21,10 @@ namespace CommunityAppAPI.Models
         public string Mobile { get; set; }
 
         [MaxLength(25)]
-        public string Landline { get; set; }
+        public string? Landline { get; set; }
 
         [MaxLength(25)]
-        public string AlternateContactNo { get; set; }
+        public string? AlternateContactNo { get; set; }
 
         [Required]
         [EmailAddress]
@@ -53,14 +53,11 @@ namespace CommunityAppAPI.Models
 
         public decimal? SettlementPercentage { get; set; }
 
-        [Required]
         public bool Deleted { get; set; }
 
-        [Required]
         public bool Active { get; set; }
 
-        [Required]
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -69,7 +66,7 @@ namespace CommunityAppAPI.Models
         public DateTime? ModifiedDate { get; set; }
 
         [MaxLength(50)]
-        public string ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
 
         // 👇 Login Details Section
         [Required]
@@ -80,7 +77,6 @@ namespace CommunityAppAPI.Models
         [MaxLength(150)]
         public string Password { get; set; }  // Make sure this is hashed before saving
 
-        [Required]
         public bool LoginEnable { get; set; }
 
         [Required]

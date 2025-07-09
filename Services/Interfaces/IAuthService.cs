@@ -5,6 +5,6 @@ namespace CommunityAppAPI.Services.Interfaces
 {
     public interface IAuthService
     {
-        AuthResponseDto Authenticate(AuthRequest request);
+        Task<AuthResponseDto> Authenticate(AuthRequest request);
     }
 }

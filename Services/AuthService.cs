@@ -17,13 +17,17 @@ namespace CommunityAppAPI.Services
             _config = config;
         }
 
-        public AuthResponseDto Authenticate(AuthRequest request)
+        public async Task<AuthResponseDto> Authenticate(AuthRequest request)
         {
-            var user = _userRepository.ValidateUser(request.Email, request.Password);
-            if (user == null) return null;
+            var user = await _userRepository.ValidateUserAsync(request.Email, request.Password);
+            if (user!=null)
+            {
+                var token = JwtHelper.GenerateToken(user.CustomerId, user.Email, _config);
+                AuthResponseDto response = new AuthResponseDto();
+                user.Token = token;            
+            }
+            return user;
 
-            var token = JwtHelper.GenerateToken(user, _config);
-            return new AuthResponseDto { Email = user.Email, Token = token };
         }
     }
 }

@@ -23,7 +23,7 @@ public class Vendor
     public string Landline { get; set; }
 
     [MaxLength(25)]
-    public string AlternateContactNo { get; set; }
+    public string? AlternateContactNo { get; set; }
 
     [Required]
     [EmailAddress]
@@ -52,13 +52,10 @@ public class Vendor
 
     public decimal? SettlementPercentage { get; set; }
 
-    [Required]
     public bool Deleted { get; set; }
 
-    [Required]
     public bool Active { get; set; }
 
-    [Required]
     public DateTime CreatedDate { get; set; }
 
     [Required]
@@ -68,7 +65,7 @@ public class Vendor
     public DateTime? ModifiedDate { get; set; }
 
     [MaxLength(50)]
-    public string ModifiedBy { get; set; }
+    public string? ModifiedBy { get; set; }
     // 👇 Login Details Section
     [Required]
     [MaxLength(30)]
@@ -78,7 +75,6 @@ public class Vendor
     [MaxLength(150)]
     public string Password { get; set; }  // Make sure this is hashed before saving
 
-    [Required]
     public bool LoginEnable { get; set; }
 
     [Required]
@@ -89,8 +85,8 @@ public class Vendor
 
 public class BankDetail
 {
-    public long IIdentity { get; set; }
-    public long VendorId { get; set; }
+    public long? IIdentity { get; set; }
+    public long? VendorId { get; set; }
 
     public string BankName { get; set; }
     public string AccountNumber { get; set; }
@@ -102,8 +98,8 @@ public class BankDetail
     public bool Active { get; set; }
     public bool Deleted { get; set; }
 
-    public DateTime CreatedDate { get; set; }
-    public string CreatedBy { get; set; }
+    public DateTime? CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
 
     public DateTime? ModifiedDate { get; set; }
     public string? ModifiedBy { get; set; }
@@ -111,8 +107,8 @@ public class BankDetail
 
 public class VendorDocument
 {
-    public long DocumentIdentity { get; set; }
-    public long VendorId { get; set; }
+    public long? DocumentIdentity { get; set; }
+    public long? VendorId { get; set; }
 
     public string DocumentType { get; set; }
     public DateTime DocumentExpiryDate { get; set; }
@@ -121,8 +117,8 @@ public class VendorDocument
     public bool Active { get; set; }
     public bool Deleted { get; set; }
 
-    public DateTime CreatedDate { get; set; }
-    public string CreatedBy { get; set; }
+    public DateTime? CreatedDate { get; set; }
+    public string? CreatedBy { get; set; }
 
     public DateTime? ModifiedDate { get; set; }
     public string? ModifiedBy { get; set; }

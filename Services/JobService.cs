@@ -1,6 +1,7 @@
 ﻿using CommunityAppAPI.Models;
 using CommunityAppAPI.Repositories.Interfaces;
 using CommunityAppAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityAppAPI.Services
 {
@@ -13,7 +14,7 @@ namespace CommunityAppAPI.Services
             _jobRepository = jobRepository;
         }
 
-        public async Task<long> CreateJobAsync(Job job)
+        public async Task<ActionResults> CreateJobAsync(Job job)
         {
             return await _jobRepository.CreateJobAsync(job);
         }
@@ -26,6 +27,11 @@ namespace CommunityAppAPI.Services
         public async Task<IEnumerable<Job>> GetJobsByVendorIdAsync(long VendorId)
         {
             return await _jobRepository.GetJobsByVendorIdAsync(VendorId);
+        }
+
+        public async Task<IEnumerable<Job>> GetCustomerJobsByJobIdAsync(long JobId)
+        {
+            return await _jobRepository.GetCustomerJobsByJobIdAsync(JobId);
         }
     }
 

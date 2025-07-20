@@ -31,8 +31,8 @@ namespace CommunityAppAPI.Controllers
                 customer.CreatedDate = DateTime.Now;
                 var resultMessage = await _customerService.AddAsync(customer);
 
-                if (!string.IsNullOrEmpty(resultMessage))
-                    return _responseService.ConflictResponse(resultMessage); // 409 Conflict
+                if (!resultMessage.Success)
+                    return _responseService.ConflictResponse(resultMessage.Message); // 409 Conflict    
 
                 return _responseService.SuccessResponse(null, "Customer created successfully");
             }

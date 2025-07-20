@@ -20,6 +20,7 @@ namespace CommunityAppAPI.Controllers
             _responseService = responseService;
         }
 
+        [AllowAnonymous]
         [HttpPost("create")]
         public async Task<IActionResult> CreateJob([FromBody] Job job)
         {
@@ -28,8 +29,10 @@ namespace CommunityAppAPI.Controllers
 
             try
             {
-                var jobId = await _jobService.CreateJobAsync(job);
-                return _responseService.SuccessResponse(jobId, "Job created and vendors assigned successfully");
+                var resultMessage = await _jobService.CreateJobAsync(job);
+                if (!resultMessage.Success)
+                    return _responseService.ConflictResponse(resultMessage.Message); // 409 Conflict    
+                return _responseService.SuccessResponse(resultMessage.Id, "Job created and vendors assigned successfully");
             }
             catch (Exception ex)
             {
@@ -56,6 +59,21 @@ namespace CommunityAppAPI.Controllers
             try
             {
                 var jobs = await _jobService.GetJobsByVendorIdAsync(VendorId);
+                return _responseService.SuccessResponse(jobs, "Jobs fetched successfully");
+            }
+            catch (Exception ex)
+            {
+                return _responseService.ErrorResponse($"Error fetching jobs: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetCustomerJobsByJobId/{JobId}")]
+        public async Task<IActionResult> GetCustomerJobsByJobIdAsync(long JobId)
+        {
+            try
+            {
+                var jobs = await _jobService.GetCustomerJobsByJobIdAsync(JobId);
                 return _responseService.SuccessResponse(jobs, "Jobs fetched successfully");
             }
             catch (Exception ex)

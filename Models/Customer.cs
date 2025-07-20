@@ -81,5 +81,19 @@ namespace CommunityAppAPI.Models
 
         [Required]
         public char CustomerType { get; set; }
+
+        public byte[]? Image { get; set; }
+    }
+
+    public class ServiceMaster
+    {
+        public long ServiceId { get; set; }
+        public string ServiceName { get; set; }
+        public bool? Deleted { get; set; }
+        public bool? Active { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public string? ModifiedBy { get; set; }
     }
 }

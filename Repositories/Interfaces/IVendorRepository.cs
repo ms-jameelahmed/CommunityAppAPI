@@ -1,8 +1,10 @@
-﻿namespace CommunityAppAPI.Repositories.Interfaces
+﻿using CommunityAppAPI.Models;
+
+namespace CommunityAppAPI.Repositories.Interfaces
 {
     public interface IVendorRepository
     {
-        Task<string> RegisterVendorAsync(Vendor vendor);
+        Task<ActionResults> RegisterVendorAsync(Vendor vendor);
         Task<IEnumerable<Vendor>> GetAllAsync();
         Task<Vendor> GetByIdAsync(long vendorId);
         Task<string> UpdateVendorAsync(Vendor vendor);

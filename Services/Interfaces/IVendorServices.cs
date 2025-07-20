@@ -4,7 +4,7 @@ namespace CommunityAppAPI.Services.Interfaces
 {
     public interface IVendorService
     {
-        Task<string> RegisterVendorAsync(Vendor vendor);
+        Task<ActionResults> RegisterVendorAsync(Vendor vendor);
         Task<IEnumerable<Vendor>> GetAllAsync();
         Task<Vendor> GetByIdAsync(long vendorId);
         Task<string> UpdateVendorAsync(Vendor vendor);

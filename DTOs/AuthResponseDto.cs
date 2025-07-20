@@ -64,15 +64,14 @@ namespace CommunityAppAPI.DTOs
         [MaxLength(30)]
         public string UserId { get; set; }
 
-        
-        [MaxLength(150)]
-        public string Password { get; set; }  // Make sure this is hashed before saving
 
         
         public bool LoginEnable { get; set; }
 
         
         public char CustomerType { get; set; }
+
+        public byte[]? Image { get; set; }
 
     }
 }

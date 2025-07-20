@@ -3,6 +3,7 @@ using CommunityAppAPI.Repositories.Interfaces;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CommunityAppAPI.Repositories
 {
@@ -26,12 +27,19 @@ namespace CommunityAppAPI.Repositories
 
         public async Task<Vendor> GetByIdAsync(long id)
         {
-            using var connection = CreateConnection();
-            var vendor = await connection.QueryFirstOrDefaultAsync<Vendor>(
-                "usp_Vendor_GetById",
-                new { VendorId = id },
-                commandType: CommandType.StoredProcedure
-            );
+            using var multi = await CreateConnection().QueryMultipleAsync("usp_Vendor_GetById",
+                new { VendorId = id }, commandType: CommandType.StoredProcedure);
+
+            var vendor = await multi.ReadFirstOrDefaultAsync<Vendor>();
+            var documents = (await multi.ReadAsync<VendorDocument>()).ToList();
+            var bankDetail = await multi.ReadFirstOrDefaultAsync<BankDetail>();
+
+            if (vendor != null)
+            {
+                vendor.Documents = documents;
+                vendor.BankDetail = bankDetail;
+            }
+
             return vendor;
         }
 
@@ -43,7 +51,7 @@ namespace CommunityAppAPI.Repositories
 
 
 
-        public async Task<string> RegisterVendorAsync(Vendor vendor)
+        public async Task<ActionResults> RegisterVendorAsync(Vendor vendor)
         {
             var connection = (SqlConnection)CreateConnection();
             await connection.OpenAsync();
@@ -74,7 +82,8 @@ namespace CommunityAppAPI.Repositories
                         vendor.CreatedBy,
                         vendor.UserId,
                         vendor.Password,
-                        vendor.CustomerType
+                        vendor.CustomerType,
+                        vendor.Image,
                     },
                     transaction,
                     commandType: CommandType.StoredProcedure
@@ -87,7 +96,13 @@ namespace CommunityAppAPI.Repositories
                     response?.StartsWith("Mobile") == true)
                 {
                     transaction.Rollback();
-                    return response; // e.g., "Email : xyz@example.com Already Exists"
+                    return new ActionResults
+                    {
+                        Success = false,
+                        Id = 0,
+                        Message = response
+                    };
+                    
                 }
 
                 long vendorId = long.Parse(response);
@@ -135,14 +150,25 @@ namespace CommunityAppAPI.Repositories
                 }
 
                 transaction.Commit();
-                return $"Success: Vendor registered with ID {vendorId}.";
+                return new ActionResults
+                {
+                    Success = true,
+                    Id = vendorId,
+                    Message = "Vendor registered successfully."
+                };
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
                 var errorId = Guid.NewGuid();
                 var timestamp = DateTime.UtcNow.ToString("u");
-                return $"Error: {ex.Message} | Reference ID: {errorId} | Timestamp: {timestamp}";
+                return new ActionResults
+                {
+                    Success = false,
+                    Id = 0,
+                    Message = $"Error: {ex.Message} | Reference ID: {errorId} | Timestamp: {timestamp}"
+                };
+                 
             }
         }
 

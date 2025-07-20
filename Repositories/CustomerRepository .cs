@@ -1,7 +1,10 @@
-﻿using CommunityAppAPI.Models;
+﻿using Azure;
+using CommunityAppAPI.Models;
 using CommunityAppAPI.Repositories.Interfaces;
-using System.Data;
 using Dapper;
+using System.Data;
+using System.Data.Common;
+using System.Transactions;
 
 namespace CommunityAppAPI.Repositories
 {
@@ -24,37 +27,73 @@ namespace CommunityAppAPI.Repositories
             return await _db.QueryFirstOrDefaultAsync<Customer>("usp_Customers_GetById", new { CustomerId = id }, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<string> AddAsync(Customer customer)
+        public async Task<ActionResults> AddAsync(Customer customer)
         {
-            var result = await _db.QueryAsync<string>("usp_Customers_Insert", new
+            try
             {
-                customer.TypeId,
-                customer.Type,
-                customer.Name,
-                customer.Mobile,
-                customer.Landline,
-                customer.AlternateContactNo,
-                customer.Email,
-                customer.CommunityId,
-                customer.Building,
-                customer.Block,
-                customer.Address,
-                customer.Longitude,
-                customer.Latitude,
-               
-                customer.SettlementPercentage,
-               
-                customer.CreatedBy,
-                customer.UserId,
-                customer.Password,
+                var result = await _db.QueryAsync<string>("usp_Customers_Insert", new
+                {
+                    customer.TypeId,
+                    customer.Type,
+                    customer.Name,
+                    customer.Mobile,
+                    customer.Landline,
+                    customer.AlternateContactNo,
+                    customer.Email,
+                    customer.CommunityId,
+                    customer.Building,
+                    customer.Block,
+                    customer.Address,
+                    customer.Longitude,
+                    customer.Latitude,
+
+                    customer.SettlementPercentage,
+
+                    customer.CreatedBy,
+                    customer.UserId,
+                    customer.Password,
+
+                    customer.CustomerType,
+                    customer.Image,
+                }, commandType: CommandType.StoredProcedure);
+
+                var response = result.FirstOrDefault();
+
+                if (response?.StartsWith("UserId") == true ||
+                    response?.StartsWith("Email") == true ||
+                    response?.StartsWith("Mobile") == true)
+                {
+                 
+                    return new ActionResults
+                    {
+                        Success = false,
+                        Id = 0,
+                        Message = response
+                    };
+
+                }
+                return new ActionResults
+                {
+                    Success = true,
+                    Id = 0,
+                    Message = "Vendor registered successfully."
+                };
+            }
+            catch (Exception ex)
+            {
                 
-                customer.CustomerType
-            }, commandType: CommandType.StoredProcedure);
+                var errorId = Guid.NewGuid();
+                var timestamp = DateTime.UtcNow.ToString("u");
+                return new ActionResults
+                {
+                    Success = false,
+                    Id = 0,
+                    Message = $"Error: {ex.Message} | Reference ID: {errorId} | Timestamp: {timestamp}"
+                };
 
-            var firstResult = result.FirstOrDefault();
+            }
 
-            // If the first result contains a message, return it
-            return firstResult; // could be null if everything is successful
+
         }
 
 

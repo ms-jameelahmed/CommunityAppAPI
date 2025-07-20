@@ -13,7 +13,7 @@ namespace CommunityAppAPI.Services
             _repo = repo;
         }
 
-        public Task<string> RegisterVendorAsync(Vendor vendor)
+        public Task<ActionResults> RegisterVendorAsync(Vendor vendor)
             => _repo.RegisterVendorAsync(vendor);
 
         public Task<IEnumerable<Vendor>> GetAllAsync()

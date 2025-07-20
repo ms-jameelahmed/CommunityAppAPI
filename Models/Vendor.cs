@@ -81,6 +81,8 @@ public class Vendor
     public char CustomerType { get; set; }
     public BankDetail BankDetail { get; set; }
     public List<VendorDocument> Documents { get; set; } = new();
+
+    public byte[]? Image { get; set; }
 }
 
 public class BankDetail
@@ -103,6 +105,7 @@ public class BankDetail
 
     public DateTime? ModifiedDate { get; set; }
     public string? ModifiedBy { get; set; }
+   
 }
 
 public class VendorDocument

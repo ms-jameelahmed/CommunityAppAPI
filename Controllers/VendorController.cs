@@ -30,10 +30,10 @@ namespace CommunityAppAPI.Controllers
             try
             {
                 var result = await _vendorService.RegisterVendorAsync(vendor);
-                if (!string.IsNullOrEmpty(result))
-                    return _responseService.ConflictResponse(result); // 409 Conflict
-                
-                    return _responseService.SuccessResponse(vendor, "Vendor registered successfully");
+                if (!result.Success)
+                    return _responseService.ConflictResponse(result.Message);
+
+                return _responseService.SuccessResponse(vendor, "Vendor registered successfully");
 
             }
             catch (Exception ex)
@@ -41,7 +41,7 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error registering vendor: {ex.Message}");
             }
         }
-
+        [AllowAnonymous]
         [HttpGet("get/{id:long}")]
         public async Task<IActionResult> GetById(long id)
         {

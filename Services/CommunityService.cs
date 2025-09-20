@@ -31,6 +31,9 @@ namespace CommunityAppAPI.Services
         }
 
         public Task<bool> DeleteAsync(int id) => _repository.DeleteAsync(id);
+
+        public Task<IEnumerable<DocumentMaster>> GetDocumentTypeByIdAsync(string _type) => _repository.GetDocumentTypeByIdAsync(_type);
+
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using CommunityAppAPI.Models;
 using CommunityAppAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace CommunityAppAPI.Controllers
         }
 
         [HttpGet]
+        
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAsync();
@@ -61,6 +63,15 @@ namespace CommunityAppAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{type}")]
+        
+        public async Task<IActionResult> GetAllDocumentType(string type)
+        {
+            var result = await _service.GetDocumentTypeByIdAsync(type);
+            return Ok(result);
+        }
+
     }
 
 }

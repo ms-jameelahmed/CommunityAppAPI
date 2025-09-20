@@ -1,4 +1,5 @@
 ﻿using CommunityAppAPI.Models;
+using CommunityAppAPI.Services;
 using CommunityAppAPI.Services.Common;
 using CommunityAppAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -19,8 +20,8 @@ namespace CommunityAppAPI.Controllers
             _customerService = customerService;
             _responseService = responseService;
         }
-
-        [HttpPost("create")]
+        
+        [HttpPost("CreateCustomer")]
         public async Task<IActionResult> Create([FromBody] Customer customer)
         {
             if (!ModelState.IsValid)
@@ -41,8 +42,8 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error creating customer: {ex.Message}");
             }
         }
-
-        [HttpGet("get/{id:long}")]
+        
+        [HttpGet("getCustomerById/{id:long}")]
         public async Task<IActionResult> GetById(long id)
         {
             try
@@ -58,8 +59,8 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error retrieving customer: {ex.Message}");
             }
         }
-
-        [HttpGet("getall")]
+        
+        [HttpGet("getallCustomers")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -72,16 +73,16 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error retrieving customers: {ex.Message}");
             }
         }
-
-        [HttpPut("update/{id:long}")]
-        public async Task<IActionResult> Update(long id, [FromBody] Customer customer)
+        
+        [HttpPost("updatecustomer")]
+        public async Task<IActionResult> Update([FromBody] UpdateCustomer customer)
         {
             if (!ModelState.IsValid)
                 return _responseService.ValidationErrorResponse(ModelState);
 
             try
             {
-                customer.CustomerId = id;
+               
                 customer.ModifiedDate = DateTime.Now;
                 await _customerService.UpdateAsync(customer);
                 return _responseService.SuccessResponse(customer, "Customer updated successfully");
@@ -92,17 +93,32 @@ namespace CommunityAppAPI.Controllers
             }
         }
 
-        [HttpDelete("delete/{id:long}")]
-        public async Task<IActionResult> Delete(long id, [FromQuery] string modifiedBy)
+        [HttpPost("deletecustomer")]
+        
+        public async Task<IActionResult> Delete([FromBody] DeleteCustomer customer)
         {
             try
             {
-                await _customerService.DeleteAsync(id, modifiedBy);
+                await _customerService.DeleteAsync(customer.CustomerId, customer.ModifiedBy );
                 return _responseService.SuccessResponse(null, "Customer deleted successfully");
             }
             catch (Exception ex)
             {
                 return _responseService.ErrorResponse($"Error deleting customer: {ex.Message}");
+            }
+        }
+        [HttpGet("GetDashboard/{CustomerId}")]
+        
+        public async Task<IActionResult> GetDashboard(int CustomerId)
+        {
+            try
+            {
+                var dashboard = await _customerService.GetCustomerDashboardAsync(CustomerId);
+                return Ok(dashboard);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Error retrieving dashboard: {ex.Message}" });
             }
         }
     }

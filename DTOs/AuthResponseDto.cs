@@ -70,7 +70,7 @@ namespace CommunityAppAPI.DTOs
 
         
         public char CustomerType { get; set; }
-
+        public bool IsOnboarded { get; set; }
         public byte[]? Image { get; set; }
 
     }

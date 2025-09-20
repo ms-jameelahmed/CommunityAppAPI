@@ -81,6 +81,15 @@ namespace CommunityAppAPI.Repositories
 
             return affected > 0;
         }
+
+        public async Task<IEnumerable<DocumentMaster>> GetDocumentTypeByIdAsync(string _type)
+        {
+            return await _db.QueryAsync< DocumentMaster>(
+                "usp_DocumentMaster_GetBytype",
+                new { type = _type },
+                commandType: CommandType.StoredProcedure
+            );
+        }
     }
 
 

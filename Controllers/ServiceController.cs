@@ -1,4 +1,5 @@
 ﻿using CommunityAppAPI.Models;
+using CommunityAppAPI.Services.Common;
 using CommunityAppAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace CommunityAppAPI.Controllers
     public class ServiceController : ControllerBase
     {
         private readonly IServiceService _service;
+        private readonly IResponseService _responseService;
 
-        public ServiceController(IServiceService service)
+        public ServiceController(IServiceService service, IResponseService responseService)
         {
             _service = service;
+            _responseService = responseService;
         }
 
         [HttpGet]
@@ -47,6 +50,25 @@ namespace CommunityAppAPI.Controllers
         {
             var success = await _service.DeleteAsync(id);
             return success ? NoContent() : NotFound();
+        }
+
+        [HttpGet("ExploreServices")]
+        public async Task<IActionResult> GetExploreServices(
+       [FromQuery] string? search,
+       [FromQuery] string? sortBy,
+       [FromQuery] decimal? minPrice,
+       [FromQuery] decimal? maxPrice,
+       [FromQuery] long? servicesId, [FromQuery] int? pagenumber,[FromQuery] int? pagesize)
+        {
+            try
+            {
+                var services = await _service.GetExploreServicesAsync(search, sortBy, minPrice, maxPrice, servicesId,pagenumber, pagesize);
+                return _responseService.SuccessResponse(services, "Explore services fetched successfully");
+            }
+            catch (Exception ex)
+            {
+                return _responseService.ErrorResponse($"Error fetching explore services: {ex.Message}");
+            }
         }
     }
 

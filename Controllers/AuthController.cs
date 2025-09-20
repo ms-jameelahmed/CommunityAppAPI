@@ -1,6 +1,7 @@
 ﻿using CommunityAppAPI.Models;
 using CommunityAppAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityAppAPI.Controllers
@@ -18,7 +19,7 @@ namespace CommunityAppAPI.Controllers
             _authService = authService;
             _logger = logger;
         }
-        [AllowAnonymous]
+        
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequest request)
         {

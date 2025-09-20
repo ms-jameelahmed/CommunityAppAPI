@@ -20,7 +20,12 @@ namespace CommunityAppAPI.Services
             var result = await _repo.AddAsync(customer);
             return result; // could be "Email already exists" or null
         }
-        public Task UpdateAsync(Customer customer) => _repo.UpdateAsync(customer);
+        public Task UpdateAsync(UpdateCustomer customer) => _repo.UpdateAsync(customer);
         public Task DeleteAsync(long id, string modifiedBy) => _repo.DeleteAsync(id, modifiedBy);
+
+        public async Task<CustomerDashboardDto> GetCustomerDashboardAsync(int CustomerId)
+        {
+            return await _repo.GetCustomerDashboardAsync(CustomerId);
+        }
     }
 }

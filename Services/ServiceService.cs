@@ -1,6 +1,8 @@
 ﻿using CommunityAppAPI.Models;
+using CommunityAppAPI.Repositories;
 using CommunityAppAPI.Repositories.Interfaces;
 using CommunityAppAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityAppAPI.Services
 {
@@ -31,6 +33,13 @@ namespace CommunityAppAPI.Services
         }
 
         public Task<bool> DeleteAsync(long id) => _repo.DeleteAsync(id);
+
+        public async Task<IEnumerable<ExploreServiceDto>> GetExploreServicesAsync(
+         string search, string sortBy, decimal? minPrice, decimal? maxPrice, long? categoryId,int? pagenumber, [FromQuery] int? records)
+        {
+            return await _repo.GetExploreServicesAsync(search, sortBy, minPrice, maxPrice, categoryId,pagenumber,records);
+        }
+
     }
 
 }

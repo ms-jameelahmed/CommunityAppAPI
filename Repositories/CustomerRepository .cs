@@ -63,7 +63,7 @@ namespace CommunityAppAPI.Repositories
                     response?.StartsWith("Email") == true ||
                     response?.StartsWith("Mobile") == true)
                 {
-                 
+
                     return new ActionResults
                     {
                         Success = false,
@@ -81,7 +81,7 @@ namespace CommunityAppAPI.Repositories
             }
             catch (Exception ex)
             {
-                
+
                 var errorId = Guid.NewGuid();
                 var timestamp = DateTime.UtcNow.ToString("u");
                 return new ActionResults
@@ -98,8 +98,9 @@ namespace CommunityAppAPI.Repositories
 
 
 
-        public async Task UpdateAsync(Customer customer)
+        public async Task UpdateAsync(UpdateCustomer customer)
         {
+
             var parameters = new DynamicParameters();
             parameters.Add("@CustomerId", customer.CustomerId);
             parameters.Add("@TypeId", customer.TypeId);
@@ -118,10 +119,19 @@ namespace CommunityAppAPI.Repositories
             parameters.Add("@Blacklisted", customer.Blacklisted);
             parameters.Add("@SettlementPercentage", customer.SettlementPercentage);
             parameters.Add("@Active", customer.Active);
-            parameters.Add("@ModifiedDate", customer.ModifiedDate);
             parameters.Add("@ModifiedBy", customer.ModifiedBy);
+            parameters.Add("@Image",
+    customer.Image != null && customer.Image.Length > 0
+        ? customer.Image
+        : null,
+    DbType.Binary);
 
-            await _db.ExecuteAsync("usp_Customers_Update", parameters, commandType: CommandType.StoredProcedure);
+            await _db.ExecuteAsync(
+                "usp_Customers_Update",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+
+
         }
 
         public async Task DeleteAsync(long id, string modifiedBy)
@@ -129,6 +139,24 @@ namespace CommunityAppAPI.Repositories
             await _db.ExecuteAsync("usp_Customers_Delete",
                 new { CustomerId = id, ModifiedDate = DateTime.Now, ModifiedBy = modifiedBy },
                 commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<CustomerDashboardDto> GetCustomerDashboardAsync(int customerId)
+        {
+
+            using var multi = await _db.QueryMultipleAsync("usp_GetCustomerDashboard", new { CustomerId = customerId }, commandType: CommandType.StoredProcedure);
+
+
+            var quotationSummary = await multi.ReadFirstOrDefaultAsync<CustomerSummaryDto>();
+            var promotional = await multi.ReadFirstOrDefaultAsync<List<PromotionalContentDto>>();
+
+
+            return new CustomerDashboardDto
+            {
+                jobstats = quotationSummary,
+                Promotionalcontent = promotional,
+
+            };
         }
     }
 }

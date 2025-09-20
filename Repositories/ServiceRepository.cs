@@ -1,6 +1,7 @@
 ﻿using CommunityAppAPI.Models;
 using CommunityAppAPI.Repositories.Interfaces;
 using Dapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -74,6 +75,24 @@ namespace CommunityAppAPI.Repositories
             );
 
             return rows > 0;
+        }
+        public async Task<IEnumerable<ExploreServiceDto>> GetExploreServicesAsync(
+       string search, string sortBy, decimal? minPrice, decimal? maxPrice, long? categoryId, int? pagenumber, [FromQuery] int? records)
+        {
+            
+                var parameters = new DynamicParameters();
+                parameters.Add("@Search", search);
+                parameters.Add("@SortBy", sortBy);
+                parameters.Add("@MinPrice", minPrice);
+                parameters.Add("@MaxPrice", maxPrice);
+                parameters.Add("@CategoryId", categoryId);
+                  parameters.Add("@pagenumber", pagenumber);
+                    parameters.Add("@records", records);
+            return await _db.QueryAsync<ExploreServiceDto>(
+                    "usp_GetExploreServices",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+            
         }
     }
 

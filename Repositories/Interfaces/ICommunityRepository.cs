@@ -9,5 +9,9 @@ namespace CommunityAppAPI.Repositories.Interfaces
         Task<int> CreateAsync(CommunityMaster community);
         Task<bool> UpdateAsync(CommunityMaster community);
         Task<bool> DeleteAsync(int id);
+
+        Task<IEnumerable<DocumentMaster>> GetDocumentTypeByIdAsync(string _type);
+
+
     }
 }

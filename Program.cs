@@ -129,12 +129,22 @@ builder.Services.AddScoped<ICommunityRepository, CommunityRepository>();
 builder.Services.AddScoped<ICommunityService, CommunityService>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
+
+builder.Services.AddScoped<ICommonRepository, CommonRepository>();
+builder.Services.AddScoped<ICommonService, CommonService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ISmtpSettingsRepository, SmtpSettingsRepository>();
+builder.Services.AddScoped<ISiteVisitService, SiteVisitService>();
+builder.Services.AddScoped<ISiteVisitRepository, SiteVisitRepository>();
+
+builder.Services.AddScoped<IJobPaymentRepository, JobPaymentRepository>();
+builder.Services.AddScoped<IJobPaymentService, JobPaymentService>();
 var app = builder.Build();
 
 
 // Middleware
 
-
+app.UseCors("AllowAll");
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();

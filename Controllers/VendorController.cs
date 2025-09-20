@@ -21,7 +21,8 @@ namespace CommunityAppAPI.Controllers
             _responseService = responseService;
         }
 
-        [HttpPost("register")]
+        [HttpPost("RegisterVendor")]
+        
         public async Task<IActionResult> RegisterVendor([FromBody] Vendor vendor)
         {
             if (!ModelState.IsValid)
@@ -33,6 +34,8 @@ namespace CommunityAppAPI.Controllers
                 if (!result.Success)
                     return _responseService.ConflictResponse(result.Message);
 
+
+
                 return _responseService.SuccessResponse(vendor, "Vendor registered successfully");
 
             }
@@ -41,8 +44,8 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error registering vendor: {ex.Message}");
             }
         }
-        [AllowAnonymous]
-        [HttpGet("get/{id:long}")]
+        
+        [HttpGet("getVendorbyid/{id:long}")]
         public async Task<IActionResult> GetById(long id)
         {
             try
@@ -58,8 +61,8 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error retrieving vendor: {ex.Message}");
             }
         }
-
-        [HttpGet("getall")]
+        
+        [HttpGet("GetAllVendors")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -72,9 +75,9 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error retrieving vendors: {ex.Message}");
             }
         }
-
-        [HttpPut("update/{id:long}")]
-        public async Task<IActionResult> Update(long id, [FromBody] Vendor vendor)
+        
+        [HttpPut("updateVendors/{id:long}")]
+        public async Task<IActionResult> Update(long id, [FromBody] UpdateCustomer vendor)
         {
             if (!ModelState.IsValid)
                 return _responseService.ValidationErrorResponse(ModelState);
@@ -94,13 +97,13 @@ namespace CommunityAppAPI.Controllers
                 return _responseService.ErrorResponse($"Error updating vendor: {ex.Message}");
             }
         }
-
-        [HttpDelete("delete/{id:long}")]
-        public async Task<IActionResult> Delete(long id, [FromQuery] string modifiedBy)
+        
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete(DeleteCustomer customer)
         {
             try
             {
-                var result = await _vendorService.DeleteVendorAsync(id, modifiedBy);
+                var result = await _vendorService.DeleteVendorAsync(customer.CustomerId, customer.ModifiedBy);
                 if (result)
                     return _responseService.SuccessResponse(null, "Vendor deleted successfully");
 
@@ -109,6 +112,73 @@ namespace CommunityAppAPI.Controllers
             catch (Exception ex)
             {
                 return _responseService.ErrorResponse($"Error deleting vendor: {ex.Message}");
+            }
+        }
+        
+        [HttpGet("GetAllVendorServices/{vendorId:long}")]
+        public async Task<IActionResult> GetAllVendorServices(long vendorId)
+        {
+            var result = await _vendorService.GetVendorServicesAsync(vendorId);
+            return Ok(result);
+        }
+        
+        [HttpPost("AddVendorService")]
+        public async Task<IActionResult> AddVendorService([FromBody] Vendor_Service vendorService)
+        {
+
+            try
+            {
+                var result = await _vendorService.InsertVendorServiceAsync(vendorService);
+                if (result.Success)
+                    return _responseService.SuccessResponse(result, "Inserted successfully");
+
+                return _responseService.ErrorResponse("Vendor deletion failed");
+            }
+            catch (Exception ex)
+            {
+                return _responseService.ErrorResponse($"Error.. Insert failed: {ex.Message}");
+            }
+           
+        }
+        
+        [HttpPost("updateVendorService")]
+        public async Task<IActionResult> updateVendorService([FromBody] Vendor_Service vendorService)
+        {
+            try
+            {
+                var result = await _vendorService.UpdateVendorServiceAsync(vendorService);
+                if (result.Success)
+                    return _responseService.SuccessResponse(result, "Updated successfully");
+
+                return _responseService.ErrorResponse("Vendor service Update failed");
+            }
+            catch (Exception ex)
+            {
+                return _responseService.ErrorResponse($"Error.. Update failed: {ex.Message}");
+            }
+             
+        }
+
+        [HttpGet("GetAllVendorsforService/{serviceId:long}")]
+        
+        public async Task<IActionResult> GetAllVendorsforService(long serviceId)
+        {
+            var result = await _vendorService.GetAllVendorsforService(serviceId);
+            return Ok(result);
+        }
+
+        [HttpGet("GetVendorDashboard/{vendorId}")]
+        
+        public async Task<IActionResult> GetDashboard(int vendorId)
+        {
+            try
+            {
+                var dashboard = await _vendorService.GetVendorDashboardAsync(vendorId);
+                return Ok(dashboard);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Error retrieving dashboard: {ex.Message}" });
             }
         }
     }

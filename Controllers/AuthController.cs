@@ -19,7 +19,7 @@ namespace CommunityAppAPI.Controllers
             _authService = authService;
             _logger = logger;
         }
-         
+        
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequest request)
         {
